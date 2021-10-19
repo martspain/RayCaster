@@ -126,7 +126,7 @@ class Raycaster(object):
 
             tex = self.wallTextures[id]
             tex = pygame.transform.scale(tex, (tex.get_width() * rayWidth, int(h)))
-            tex.fill((color_k,color_k,color_k), special_flags=pygame.BLEND_MULT)
+            # tex.fill((color_k,color_k,color_k), special_flags=pygame.BLEND_MULT)
             tx = int(tx * tex.get_width())
             self.screen.blit(tex, (startX, startY), (tx,0,rayWidth,tex.get_height()))
 
