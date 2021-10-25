@@ -6,7 +6,7 @@ class Game(object):
     def __init__(self, width = 1000, height = 500):
         pygame.init()
         self.rayCaster = None
-        self.running, self.playing = True, False
+        self.running, self.playing, self.isPaused = True, False, False
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
         self.width, self.height = width, height
         self.display = pygame.Surface((self.width, self.height))
@@ -16,7 +16,10 @@ class Game(object):
         self.clock = pygame.time.Clock()
         self.main_menu = MainMenu(self)
         self.credits = CreditsMenu(self)
+        self.options = OptionsMenu(self)
+        self.pause = PauseMenu(self)
         self.curr_menu = self.main_menu
+
 
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
 
@@ -65,10 +68,10 @@ class Game(object):
 
             elif ev.type == pygame.KEYDOWN:
 
-                if ev.key == pygame.K_ESCAPE:
-                    self.running, self.playing = False, False
-                    self.curr_menu.run_display = False
-                elif ev.key == pygame.K_RETURN:
+                # if ev.key == pygame.K_ESCAPE:
+                #     self.running, self.playing = False, False
+                #     self.curr_menu.run_display = False
+                if ev.key == pygame.K_RETURN:
                     self.START_KEY = True
                 elif ev.key == pygame.K_BACKSPACE:
                     self.BACK_KEY = True
@@ -77,37 +80,44 @@ class Game(object):
                 elif ev.key == pygame.K_UP:
                     self.UP_KEY = True
 
-            
-                newX = self.rayCaster.player['x']
-                newY = self.rayCaster.player['y']
-                forward = self.rayCaster.player['angle'] * pi / 180
-                right = (self.rayCaster.player['angle'] + 90) * pi / 180
+                if self.isPaused:
+                    if ev.key == pygame.K_ESCAPE:
+                        self.playing, self.isPaused = True, False
+                        self.curr_menu.run_display = False
 
-                if ev.key == pygame.K_ESCAPE:
-                    self.running, self.playing = False, False
-                elif ev.key == pygame.K_w:
-                    newX += cos(forward) * self.rayCaster.stepSize
-                    newY += sin(forward) * self.rayCaster.stepSize
-                elif ev.key == pygame.K_s:
-                    newX -= cos(forward) * self.rayCaster.stepSize
-                    newY -= sin(forward) * self.rayCaster.stepSize
-                elif ev.key == pygame.K_a:
-                    newX -= cos(right) * self.rayCaster.stepSize
-                    newY -= sin(right) * self.rayCaster.stepSize
-                elif ev.key == pygame.K_d:
-                    newX += cos(right) * self.rayCaster.stepSize
-                    newY += sin(right) * self.rayCaster.stepSize
-                elif ev.key == pygame.K_q:
-                    self.rayCaster.player['angle'] -= self.rayCaster.turnSize
-                elif ev.key == pygame.K_e:
-                    self.rayCaster.player['angle'] += self.rayCaster.turnSize
+                if not self.isPaused:
+                    newX = self.rayCaster.player['x']
+                    newY = self.rayCaster.player['y']
+                    forward = self.rayCaster.player['angle'] * pi / 180
+                    right = (self.rayCaster.player['angle'] + 90) * pi / 180
 
-                i = int(newX/self.rayCaster.blocksize)
-                j = int(newY/self.rayCaster.blocksize)
+                    if ev.key == pygame.K_ESCAPE:
+                        self.playing, self.isPaused = False, True
+                        self.curr_menu.run_display = True
+                        self.curr_menu = self.pause
+                    elif ev.key == pygame.K_w:
+                        newX += cos(forward) * self.rayCaster.stepSize
+                        newY += sin(forward) * self.rayCaster.stepSize
+                    elif ev.key == pygame.K_s:
+                        newX -= cos(forward) * self.rayCaster.stepSize
+                        newY -= sin(forward) * self.rayCaster.stepSize
+                    elif ev.key == pygame.K_a:
+                        newX -= cos(right) * self.rayCaster.stepSize
+                        newY -= sin(right) * self.rayCaster.stepSize
+                    elif ev.key == pygame.K_d:
+                        newX += cos(right) * self.rayCaster.stepSize
+                        newY += sin(right) * self.rayCaster.stepSize
+                    elif ev.key == pygame.K_q:
+                        self.rayCaster.player['angle'] -= self.rayCaster.turnSize
+                    elif ev.key == pygame.K_e:
+                        self.rayCaster.player['angle'] += self.rayCaster.turnSize
 
-                if self.rayCaster.map[j][i] == ' ':
-                    self.rayCaster.player['x'] = newX
-                    self.rayCaster.player['y'] = newY
+                    i = int(newX/self.rayCaster.blocksize)
+                    j = int(newY/self.rayCaster.blocksize)
+
+                    if self.rayCaster.map[j][i] == ' ':
+                        self.rayCaster.player['x'] = newX
+                        self.rayCaster.player['y'] = newY
     
     def resetKeys(self):
         self.UP_KEY, self.DOWN_KEY, self.START_KEY, self.BACK_KEY = False, False, False, False
