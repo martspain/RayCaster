@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 from menu import *
 from msmath import sin, cos, pi
 
@@ -20,6 +21,11 @@ class Game(object):
         self.pause = PauseMenu(self)
         self.curr_menu = self.main_menu
 
+        pygame.display.set_caption("Nazi Apocalypse")
+
+        # Background music
+        mixer.music.load('res/sfx/backgroundMusic.wav')
+        mixer.music.play(-1)
 
         self.BLACK, self.WHITE = (0, 0, 0), (255, 255, 255)
 
@@ -40,10 +46,10 @@ class Game(object):
             self.window.fill(pygame.Color("gray"))
 
             # Techo
-            self.window.fill(pygame.Color("saddlebrown"), (int(self.width / 2), 0,  int(self.width / 2), int(self.height / 2)))
+            self.window.fill(pygame.Color("saddlebrown"), (0, 0,  self.width, int(self.height / 2)))
 
             # Piso
-            self.window.fill(pygame.Color("dimgray"), (int(self.width / 2), int(self.height / 2),  int(self.width / 2), int(self.height / 2)))
+            self.window.fill(pygame.Color("dimgray"), (0, int(self.height / 2),  self.width, int(self.height / 2)))
 
 
             self.rayCaster.render()
